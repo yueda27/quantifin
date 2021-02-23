@@ -11,7 +11,7 @@ setuptools.setup(
     description="Quant Finance Package",
     long_description=long_description,
     long_description_content_type="",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/yueda27/quantifin",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
