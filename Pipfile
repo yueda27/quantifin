@@ -4,9 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
-build = "*"
-yueda27 = {editable = true, path = "."}
+quantifin = {editable = true, path = "."}
 
 [dev-packages]
 
