@@ -16,8 +16,3 @@ class TestCase(unittest.TestCase):
     def test_CAPM(self):
         req_rate_CAPM = CAPM(2, 10, 1.2)
         self.assertEqual(req_rate_CAPM, 11.6)
-    
-    
-    
-    
-
