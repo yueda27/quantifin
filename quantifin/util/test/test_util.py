@@ -23,13 +23,14 @@ class TestCase(unittest.TestCase):
 
 
     def test_get_market_return(self):
-        annual_return = (13597.9658203125 - 7729.31982421875) / 7729.31982421875
+        annual_return = 13597.9658203125  / 7729.31982421875
 
         index_price_list = markets.get_market_price_list(self.index_json)
         self.assertAlmostEqual(markets.returns(index_price_list), annual_return, 3)
-
-    # def test_get_required_rate_of_return(self):
-    #     self.stock.beta = 1.3
-    #     self.stock.risk_free = 2
-    #     self.assertEqual(self.stock.required_rate_of_return(), 2 + 1.3())
+    
+    def test_get_annualised_market_return(self):
+        market_returns = markets.returns(markets.get_market_price_list(self.index_json))
+        annualised_return = markets.annualise(market_returns, 2)
+        self.assertEqual(annualised_return, (((13597.9658203125  / 7729.31982421875) ** (1/2)) - 1))
+        
 
