@@ -9,16 +9,24 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         #self.stock = Stock("AAPL")
         self.base_path = Path(__file__).parent
+        self.index_json = self.read_json(str(self.base_path) + "/resource/market_price.json")
     
-    def test_get_market_return(self):
-        file_path = str(self.base_path) + "/resource/market_price.json" 
+    def read_json(self, file_path):
         with open (file_path) as f:
-            index_price = json.load(f)
+            json_dict = json.load(f)
+        return json_dict
 
+    def test_get_market_price_list(self):
+        index_price_list = markets.get_market_price_list(self.index_json)
+        index_code = list(self.index_json.keys())[0]
+        self.assertEqual(index_price_list, self.index_json[index_code]['prices']) 
+
+
+    def test_get_market_return(self):
         annual_return = (13597.9658203125 - 7729.31982421875) / 7729.31982421875
 
-        index_code = list(index_price.keys())[0]
-        self.assertAlmostEqual(markets.returns(index_code, index_price), annual_return, 3)
+        index_price_list = markets.get_market_price_list(self.index_json)
+        self.assertAlmostEqual(markets.returns(index_price_list), annual_return, 3)
 
     # def test_get_required_rate_of_return(self):
     #     self.stock.beta = 1.3
