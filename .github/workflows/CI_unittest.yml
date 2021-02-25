@@ -20,4 +20,4 @@ jobs:
         pipenv install
     - name: Analysing the code with unittest
       run: |
-        pipenv run ./bin/unittest.sh
+        pipenv run .bin/unittest.sh
