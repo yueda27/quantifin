@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 quantifin = {editable = true, path = "."}
+ipykernel = "*"
 
 [dev-packages]
 
