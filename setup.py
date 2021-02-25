@@ -20,6 +20,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'pandas',
+        'yahoofinancials==1.6'
     ],
     python_requires='>=3.6',
 )
