@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import json
 
-from quantifin.util import Stock, markets
+from quantifin.util import markets
 
 
 class TestCase(unittest.TestCase):
@@ -11,14 +11,14 @@ class TestCase(unittest.TestCase):
         self.base_path = Path(__file__).parent
     
     def test_get_market_return(self):
-        print(self.base_path)
         file_path = str(self.base_path) + "/resource/market_price.json" 
         with open (file_path) as f:
-            monthly_price = json.load(f)
-        
+            index_price = json.load(f)
+
         annual_return = (13597.9658203125 - 7729.31982421875) / 7729.31982421875
-        index_code = list(monthly_price.keys())[0]
-        self.assertEqual(market.returns(monthy_price.keys(index_code, annual_return)))
+
+        index_code = list(index_price.keys())[0]
+        self.assertAlmostEqual(markets.returns(index_code, index_price), annual_return, 3)
 
     # def test_get_required_rate_of_return(self):
     #     self.stock.beta = 1.3
