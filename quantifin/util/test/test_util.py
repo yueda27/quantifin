@@ -34,8 +34,3 @@ class TestCase(unittest.TestCase):
         self.assertEqual(annualised_return, (((13597.9658203125  / 7729.31982421875) ** (1/2)) - 1))
         
 
-    # def test_get_required_rate_of_return(self):
-    #     self.stock.beta = 1.3
-    #     self.stock.risk_free = 2
-    #     self.assertEqual(self.stock.required_rate_of_return(), 2 + 1.3())
-
