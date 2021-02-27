@@ -51,22 +51,26 @@ class TestCase(unittest.TestCase):
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_get_current_dividend(self, MockDividend, MockGetBeta):
-        def get_dividend_side_effect(start_date, end_date):
-            dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
-            return self.read_json(dividend_path)
             
-        MockDividend.side_effect = get_dividend_side_effect
+        MockDividend.side_effect = self.get_dividend_side_effect
         stock = Stock("D05.SI")
         self.assertEqual(stock.full_year_dividend(), 1.35)
 
-    def test_gordon_growth_valuation(self, MockGetBeta):
-        current_dividend = 2.0 #NEEDS IMPLEMENTATION
+    @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
+    def test_gordon_growth_valuation(self, MockDividend, MockGetBeta):
+        MockDividend.side_effect = self.get_dividend_side_effect
+        stock = Stock('D05.SI')
+        current_dividend = stock.full_year_dividend()
         req_rate = CAPM(0.02, 0.10, 1.2)
         growth_rate = 0.1 #NEEDS IMPLEMENTATION
 
         self.assertRaises(ValueError, gordon_growth_valuation, -2, req_rate, growth_rate)
         self.assertRaises(ValueError, gordon_growth_valuation, current_dividend, -0.116, growth_rate)
-        self.assertEqual(gordon_growth_valuation(current_dividend, req_rate, growth_rate), 137.5)
-        
+        self.assertEqual(gordon_growth_valuation(current_dividend, req_rate, growth_rate), 92.81)
+    
+
+    def get_dividend_side_effect(self, start_date, end_date):
+        dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
+        return self.read_json(dividend_path)
         
 
