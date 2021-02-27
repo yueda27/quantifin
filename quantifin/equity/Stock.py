@@ -9,7 +9,7 @@ class Stock:
     def full_year_dividend(self):
         now_date = datetime.datetime.now()
         start_of_year, end_of_year = self._get_full_year(now_date)
-        dividend_resp = self.YfApi.get_daily_dividend_data(start_of_year, end_of_year)
+        dividend_resp = self.YfApi.get_daily_dividend_data(start_of_year.strftime("%Y-%m-%d"), end_of_year.strftime("%Y-%m-%d"))
         return self._calculate_full_dividend(dividend_resp)
     
 
