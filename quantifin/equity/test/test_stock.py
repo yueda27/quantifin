@@ -35,14 +35,16 @@ class TestCase(unittest.TestCase):
     def test_CAPM(self, MockGetBeta):
         req_rate_CAPM = CAPM(0.02, 0.1, 1.2)
         self.assertEqual(req_rate_CAPM, 0.116)
+    
 
-    def test_get_full_year(self, MockGetBeta):
+
+    def test_get_full_year_dividend(self, MockGetBeta):
         stock = Stock("AAPL")
         dec = datetime(2019, 12, 10)
-        self.assertEqual(stock._get_full_year(dec), [datetime(2019, 1, 1), dec])
+        self.assertEqual(stock._get_full_year_dividend(dec), [datetime(2019, 1, 1), dec])
 
         not_dec = datetime(2019, 11, 29)
-        self.assertEqual(stock._get_full_year(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
+        self.assertEqual(stock._get_full_year_dividend(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
 
     def test_calculate_dividend(self, MockGetBeta):
         stock = Stock("D05.SI")

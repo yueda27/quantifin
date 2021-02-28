@@ -8,7 +8,7 @@ class Stock:
     
     def full_year_dividend(self):
         now_date = datetime.datetime.now()
-        start_of_year, end_of_year = self._get_full_year(now_date)
+        start_of_year, end_of_year = self._get_full_year_dividend(now_date)
         dividend_resp = self.YfApi.get_daily_dividend_data(start_of_year.strftime("%Y-%m-%d"), end_of_year.strftime("%Y-%m-%d"))
         return self._calculate_full_dividend(dividend_resp)
     
@@ -17,7 +17,7 @@ class Stock:
         dividends = [payout['amount'] for payout in dividend_resp[self.stock_code]]
         return round(sum(dividends), 3)
 
-    def _get_full_year(self, now: datetime.datetime):
+    def _get_full_year_dividend(self, now: datetime.datetime):
         def current_year(now: datetime.datetime):
             this_year = now.year
             return [datetime.datetime(this_year, 1, 1), now]
