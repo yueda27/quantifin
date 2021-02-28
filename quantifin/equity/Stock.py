@@ -17,6 +17,35 @@ class Stock:
         dividends = [payout['amount'] for payout in dividend_resp[self.stock_code]]
         return round(sum(dividends), 3)
 
+    def get_dividend_payout_ratio_history(self):
+        ###Helper functions
+        def get_date_key(input_dict: dict):
+            return (list(input_dict.keys())[0])
+        
+        def calculate_payout(cash_flow):
+            div_payout = abs(int(cash_flow['dividendsPaid']))
+            net_income = int(cash_flow['netIncome'])
+            if net_income < 0:
+                return None
+            return round(div_payout/net_income, 3)
+
+        def get_payout_ratios(cf_stmts_list):
+            result = {}
+            for cash_flow in cash_flow_stmts_list:
+                date_key = get_date_key(cash_flow)
+                result[date_key] = calculate_payout(cash_flow[date_key])
+            return result
+        ## End of helper functions
+
+        cash_flow_stmts_list = self.YfApi.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
+        return get_payout_ratios(cash_flow_stmts_list)
+    
+    def get_avg_dividend_payout_ratio(self):
+        div_history = self.get_dividend_payout_ratio_history()
+        payout_list = [payout for payout in div_history.values()]
+        return round(sum(payout_list) / len(payout_list), 3)
+
+
     def _get_full_year_dividend(self, now: datetime.datetime):
         def current_year(now: datetime.datetime):
             this_year = now.year

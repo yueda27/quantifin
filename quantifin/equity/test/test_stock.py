@@ -61,12 +61,15 @@ class TestCase(unittest.TestCase):
     
     #Payout Ratio tests
     @patch.object(yf.YahooFinancials, 'get_financial_stmts')
-    def test_get_3_year_payout_ratio(self, MockGetFnStmts, MockGetBeta):
+    def test_get_avg_payout_ratio(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_annual_CF_side_effect
         stock = Stock("D05.SI")
         cf = stock.YfApi.get_financial_stmts('annual', 'cash')
-        print(cf)
-        self.assertEqual(stock.get_3_year_payout_ratio())
+        correct = {'2020-12-31': 0.511, '2019-12-31': 0.615, '2018-12-31': 0.565, '2017-12-31': 0.315}
+        self.assertEqual(stock.get_dividend_payout_ratio_history(), correct)
+        self.assertEqual(stock.get_avg_dividend_payout_ratio(), 0.501)
+
+
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_gordon_growth_valuation(self, MockDividend, MockGetBeta):
