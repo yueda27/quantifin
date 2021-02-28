@@ -20,10 +20,6 @@ class TestCase(unittest.TestCase):
             json_dict = load(f)
         return json_dict
 
-    def test_initialise_stock(self, MockGetBeta):
-        apple = Stock("AAPL")
-        self.assertEqual(yf.YahooFinancials.get_beta, MockGetBeta)
-        self.assertTrue(MockGetBeta.called)
     
     def test_current_dividend(self, MockGetBeta):
         apple= Stock("AAPL")
@@ -93,3 +89,7 @@ class TestCase(unittest.TestCase):
             return(self.read_json(str(self.base_path) + '/resource/financial_statements/cash_flow_stmts.json'))
         
 
+##TODO:
+    #- ROE IMPLEMENTATION
+    #- Caching 3 Financial Statements history in memory as list
+        #- Get method for them & store in memory

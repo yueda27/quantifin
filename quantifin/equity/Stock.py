@@ -4,8 +4,21 @@ class Stock:
     def __init__(self, stock_code):
         self.stock_code = stock_code
         self.YfApi = yf.YahooFinancials(self.stock_code)
-        self.beta = self.YfApi.get_beta()
-    
+        self.__beta = None 
+        self.__cash_flow = None
+    @property
+    def beta(self):
+        if self.__beta == None:
+            self.__beta = self.YfApi.get_beta()
+        return self.__beta
+
+    @property
+    def cash_flow_stmts(self):
+        if self.__cash_flow == None:
+            self.__cash_flow =  self.YfApi.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
+        return self.__cash_flow
+
+
     def full_year_dividend(self):
         now_date = datetime.datetime.now()
         start_of_year, end_of_year = self._get_FY_dividend_period(now_date)
@@ -43,17 +56,18 @@ class Stock:
 
         def get_payout_ratios(cf_stmts_list):
             result = {}
-            for cash_flow in cash_flow_stmts_list:
+            for cash_flow in self.cash_flow_stmts:
                 date_key = get_date_key(cash_flow)
                 result[date_key] = calculate_payout(cash_flow[date_key])
             return result
         ## End of helper functions
-
-        cash_flow_stmts_list = self.YfApi.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
-        return get_payout_ratios(cash_flow_stmts_list)
+        return get_payout_ratios(self.cash_flow_stmts)
     
     def get_avg_dividend_payout_ratio(self):
         div_history = self.get_dividend_payout_ratio_history()
         payout_list = [payout for payout in div_history.values()]
         return round(sum(payout_list) / len(payout_list), 3)
+    
+
+    
 
