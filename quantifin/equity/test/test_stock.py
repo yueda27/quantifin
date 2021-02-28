@@ -36,8 +36,9 @@ class TestCase(unittest.TestCase):
         req_rate_CAPM = CAPM(0.02, 0.1, 1.2)
         self.assertEqual(req_rate_CAPM, 0.116)
     
-
-
+    #################
+    #Dividend testing
+    #################
     def test_get_full_year_dividend(self, MockGetBeta):
         stock = Stock("AAPL")
         dec = datetime(2019, 12, 10)
@@ -57,6 +58,15 @@ class TestCase(unittest.TestCase):
         MockDividend.side_effect = self.get_dividend_side_effect
         stock = Stock("D05.SI")
         self.assertEqual(stock.full_year_dividend(), 1.35)
+    
+    #Payout Ratio tests
+    @patch.object(yf.YahooFinancials, 'get_financial_stmts')
+    def test_get_3_year_payout_ratio(self, MockGetFnStmts, MockGetBeta):
+        MockGetFnStmts.side_effect = self.get_annual_CF_side_effect
+        stock = Stock("D05.SI")
+        cf = stock.YfApi.get_financial_stmts('annual', 'cash')
+        print(cf)
+        self.assertEqual(stock.get_3_year_payout_ratio())
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_gordon_growth_valuation(self, MockDividend, MockGetBeta):
@@ -74,5 +84,9 @@ class TestCase(unittest.TestCase):
     def get_dividend_side_effect(self, start_date, end_date):
         dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
         return self.read_json(dividend_path)
+    
+    def get_annual_CF_side_effect(self, period, stmt_type):
+        if( stmt_type == "cash"):
+            return(self.read_json(str(self.base_path) + '/resource/financial_statements/cash_flow_stmts.json'))
         
 
