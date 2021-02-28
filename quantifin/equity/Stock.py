@@ -6,6 +6,9 @@ class Stock:
         self.YfApi = yf.YahooFinancials(self.stock_code)
         self.__beta = None 
         self.__cash_flow = None
+        self.__income = None
+        self.__balance_sheets = None
+
     @property
     def beta(self):
         if self.__beta == None:
@@ -17,6 +20,16 @@ class Stock:
         if self.__cash_flow == None:
             self.__cash_flow =  self.YfApi.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
         return self.__cash_flow
+    
+    @property
+    def income_stmts(self):
+        if self.__income == None:
+            pass
+    
+    @property
+    def balance_sheet_stmts(self):
+        if self.__balance_sheets == None:
+            pass
 
 
     def full_year_dividend(self):
