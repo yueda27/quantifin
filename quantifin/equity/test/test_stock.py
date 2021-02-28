@@ -39,13 +39,13 @@ class TestCase(unittest.TestCase):
     #################
     #Dividend testing
     #################
-    def test_get_full_year_dividend(self, MockGetBeta):
+    def test_get_FY_dividend_period(self, MockGetBeta):
         stock = Stock("AAPL")
         dec = datetime(2019, 12, 10)
-        self.assertEqual(stock._get_full_year_dividend(dec), [datetime(2019, 1, 1), dec])
+        self.assertEqual(stock._get_FY_dividend_period(dec), [datetime(2019, 1, 1), dec])
 
         not_dec = datetime(2019, 11, 29)
-        self.assertEqual(stock._get_full_year_dividend(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
+        self.assertEqual(stock._get_FY_dividend_period(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
 
     def test_calculate_dividend(self, MockGetBeta):
         stock = Stock("D05.SI")
