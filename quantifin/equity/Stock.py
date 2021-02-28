@@ -24,12 +24,14 @@ class Stock:
     @property
     def income_stmts(self):
         if self.__income == None:
-            pass
+            self.__income = self.YfApi.get_financial_stmts("annual", "income")['incomeStatementHistory'][self.stock_code]
+        return self.__income
     
     @property
     def balance_sheet_stmts(self):
         if self.__balance_sheets == None:
-            pass
+            self.__balance_sheets = self.YfApi.get_financial_stmts("annual", "balance")['balanceSheetHistory'][self.stock_code]
+        return self.__balance_sheets
 
 
     def full_year_dividend(self):
