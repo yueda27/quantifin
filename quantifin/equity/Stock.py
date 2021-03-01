@@ -80,9 +80,8 @@ class Stock:
         ## End of helper functions
         return get_payout_ratios(self.cash_flow_stmts)
     
-    def get_avg_dividend_payout_ratio(self):
-        div_history = self.get_dividend_payout_ratio_history()
-        payout_list = [payout for payout in div_history.values()]
+    def average_dividend_payout_ratio(self, payout_ratio_history: dict):
+        payout_list = [payout for payout in payout_ratio_history.values()]
         return round(sum(payout_list) / len(payout_list), 3)
     
     def get_roe_history(self):
@@ -94,7 +93,7 @@ class Stock:
             result[date_key[:4]] = self.calculate_roe(net_income, net_equity)
         return result
 
-    def calculate_roe(self, income, equity):
+    def calculate_roe(self, income: float, equity: float):
         if income < 0:
             return 0
         if equity == 0:
@@ -103,5 +102,19 @@ class Stock:
             raise ValueError("Equity is negative. A postive value should be passed in")
         return round(income/equity, 3)
 
+    def average_roe(self, roe_history: dict):
+        sum = 0
+        for roe in roe_history.values():
+            sum += roe
+        return round(sum / len(roe_history), 3)
+    
+    def growth_rate(self):
+        payout = self.average_dividend_payout_ratio(self.get_dividend_payout_ratio_history())
+        roe = self.average_roe(self.get_roe_history())
+        if payout > 1:
+            raise ValueError("Payout rate exceeds 1. Invalid value for growth rate")
+        if roe < 0:
+            raise ValueError("ROE is negative. Invalid value for growth rate")
+        return round((1 - payout) * roe, 3)
     
 
