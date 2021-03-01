@@ -9,6 +9,10 @@ class Stock:
         self.__income = None
         self.__balance_sheets = None
 
+    @staticmethod
+    def get_date_key(input_dict: dict):
+        return (list(input_dict.keys())[0])
+
     @property
     def beta(self):
         if self.__beta == None:
@@ -59,8 +63,6 @@ class Stock:
 
     def get_dividend_payout_ratio_history(self):
         ###Helper functions
-        def get_date_key(input_dict: dict):
-            return (list(input_dict.keys())[0])
         
         def calculate_payout(cash_flow):
             div_payout = abs(int(cash_flow['dividendsPaid']))
@@ -72,8 +74,8 @@ class Stock:
         def get_payout_ratios(cf_stmts_list):
             result = {}
             for cash_flow in self.cash_flow_stmts:
-                date_key = get_date_key(cash_flow)
-                result[date_key] = calculate_payout(cash_flow[date_key])
+                date_key = Stock.get_date_key(cash_flow)
+                result[date_key[:4]] = calculate_payout(cash_flow[date_key])
             return result
         ## End of helper functions
         return get_payout_ratios(self.cash_flow_stmts)
@@ -83,6 +85,23 @@ class Stock:
         payout_list = [payout for payout in div_history.values()]
         return round(sum(payout_list) / len(payout_list), 3)
     
+    def get_roe_history(self):
+        result = {}
+        for i in range(len(self.balance_sheet_stmts)):
+            date_key = Stock.get_date_key(self.balance_sheet_stmts[i])
+            net_equity = self.balance_sheet_stmts[i][date_key]['totalAssets'] - self.balance_sheet_stmts[i][date_key]['totalLiab']
+            net_income = self.income_stmts[i][date_key]['netIncome']
+            result[date_key[:4]] = self.calculate_roe(net_income, net_equity)
+        return result
+
+    def calculate_roe(self, income, equity):
+        if income < 0:
+            return 0
+        if equity == 0:
+            raise ValueError("Equity should be a non-zero value. 0 was passed as equity")
+        if equity < 0:
+            raise ValueError("Equity is negative. A postive value should be passed in")
+        return round(income/equity, 3)
 
     
 

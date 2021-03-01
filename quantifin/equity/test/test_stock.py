@@ -58,14 +58,26 @@ class TestCase(unittest.TestCase):
     #Payout Ratio tests
     @patch.object(yf.YahooFinancials, 'get_financial_stmts')
     def test_get_avg_payout_ratio(self, MockGetFnStmts, MockGetBeta):
-        MockGetFnStmts.side_effect = self.get_annual_CF_side_effect
+        MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
         stock = Stock("D05.SI")
         cf = stock.YfApi.get_financial_stmts('annual', 'cash')
-        correct = {'2020-12-31': 0.511, '2019-12-31': 0.615, '2018-12-31': 0.565, '2017-12-31': 0.315}
+        correct = {'2020': 0.511, '2019': 0.615, '2018': 0.565, '2017': 0.315}
         self.assertEqual(stock.get_dividend_payout_ratio_history(), correct)
         self.assertEqual(stock.get_avg_dividend_payout_ratio(), 0.501)
+    
+    @patch.object(yf.YahooFinancials, "get_financial_stmts")
+    def test_get_roe_history(self, MockGetFnStmts, MockGetBeta):
+        MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
 
-
+        stock = Stock("D05.SI")
+        correct_result = {"2020": 0.086, "2019": 0.123, "2018": 0.112, "2017": 0.088}
+        self.assertEqual(stock.get_roe_history(), correct_result)
+    
+    def test_calulate_roe(self, MockGetBeta):
+        stock = Stock("D05.SI")
+        self.assertRaises(ValueError, stock.calculate_roe, 100, 0)
+        self.assertRaises(ValueError, stock.calculate_roe, 100, -100)
+        self.assertEqual(stock.calculate_roe(50, 300), 0.167)
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_gordon_growth_valuation(self, MockDividend, MockGetBeta):
@@ -79,17 +91,22 @@ class TestCase(unittest.TestCase):
         self.assertRaises(ValueError, gordon_growth_valuation, current_dividend, -0.116, growth_rate)
         self.assertEqual(gordon_growth_valuation(current_dividend, req_rate, growth_rate), 92.81)
     
-
+    
     def get_dividend_side_effect(self, start_date, end_date):
         dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
         return self.read_json(dividend_path)
+
     
-    def get_annual_CF_side_effect(self, period, stmt_type):
+    def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):
             return(self.read_json(str(self.base_path) + '/resource/financial_statements/cash_flow_stmts.json'))
+        if(stmt_type == "income"):
+            return(self.read_json(str(self.base_path) + '/resource/financial_statements/income_stmts.json'))
+        
+        if(stmt_type == "balance"):
+            return(self.read_json(str(self.base_path) + '/resource/financial_statements/balance_sheet_stmts.json'))
         
 
 ##TODO:
     #- ROE IMPLEMENTATION
-    #- Caching 3 Financial Statements history in memory as list
-        #- Get method for them & store in memory
+
