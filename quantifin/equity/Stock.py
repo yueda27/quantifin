@@ -115,4 +115,3 @@ class Stock:
             raise ValueError("ROE is negative. Invalid value for growth rate")
         return round((1 - payout) * roe, 3)
     
-
