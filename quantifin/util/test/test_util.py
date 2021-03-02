@@ -40,3 +40,13 @@ class TestCase(unittest.TestCase):
         nasdaq = markets.Market("NasdaqGS")
         self.assertTrue(nasdaq.market_code, "^IXIC")
 
+
+    @patch.object(YahooFinancials, "get_historical_price_data")
+    def test_Market_get_annualised_return(self, MockGetPrice):
+        def get_price_side_effect(start, end, period):
+            file_path = str(self.base_path) + "/resource/s&p_10_year_price.json"
+            return self.read_json(file_path)
+
+        MockGetPrice.side_effect = get_price_side_effect
+        sp500 = markets.Market("S&P")
+        self.assertEqual(sp500.get_annualised_return(10), 0.1334)
