@@ -94,12 +94,10 @@ class Stock:
         return result
 
     def calculate_roe(self, income: float, equity: float):
-        if income < 0:
-            return 0
         if equity == 0:
             raise ValueError("Equity should be a non-zero value. 0 was passed as equity")
         if equity < 0:
-            raise ValueError("Equity is negative. A postive value should be passed in")
+            raise ValueError(f"Equity is negative: {equity}. A postive value should be passed in")
         return round(income/equity, 3)
 
     def average_roe(self, roe_history: dict):

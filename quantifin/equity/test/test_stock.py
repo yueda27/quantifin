@@ -102,7 +102,6 @@ class TestCase(unittest.TestCase):
         current_dividend = stock.full_year_dividend()
         req_rate = CAPM(0.02, 0.10, 1.2)
         growth_rate = stock.growth_rate()
-        print(f"req_rate = {req_rate} current_div = {current_dividend} growth_rate = {growth_rate}")
         self.assertRaises(ValueError, gordon_growth_valuation, -2, req_rate, growth_rate)
         self.assertRaises(ValueError, gordon_growth_valuation, current_dividend, -0.116, growth_rate)
         self.assertEqual(gordon_growth_valuation(current_dividend, req_rate, growth_rate), 21.828)
