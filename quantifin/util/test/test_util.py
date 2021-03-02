@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 from yahoofinancials import YahooFinancials
 
-from quantifin.util import markets
+from quantifin.util.markets import Market
 
 
 class TestCase(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestCase(unittest.TestCase):
         return json_dict
 
     def test_get_market_price_list(self):
-        index_price_list = markets.get_market_price_list(self.index_json)
+        index_price_list = Market.get_market_price_list(self.index_json)
         index_code = list(self.index_json.keys())[0]
         self.assertEqual(index_price_list, self.index_json[index_code]['prices']) 
 
@@ -27,17 +27,17 @@ class TestCase(unittest.TestCase):
     def test_get_market_return(self):
         annual_return = 13597.9658203125  / 7729.31982421875
 
-        index_price_list = markets.get_market_price_list(self.index_json)
-        self.assertAlmostEqual(markets.returns(index_price_list), annual_return, 3)
+        index_price_list = Market.get_market_price_list(self.index_json)
+        self.assertAlmostEqual(Market.returns(index_price_list), annual_return, 3)
     
     def test_get_annualised_market_return(self):
-        market_returns = markets.returns(markets.get_market_price_list(self.index_json))
-        annualised_return = markets.annualise(market_returns, 2)
+        market_returns = Market.returns(Market.get_market_price_list(self.index_json))
+        annualised_return = Market.annualise(market_returns, 2)
         self.assertEqual(annualised_return, (((13597.9658203125  / 7729.31982421875) ** (1/2)) - 1))
     
     @patch.object(YahooFinancials, "get_historical_price_data")
     def test_Market_obj_init(self, MockGetPrice):
-        nasdaq = markets.Market("NasdaqGS")
+        nasdaq = Market("NasdaqGS")
         self.assertTrue(nasdaq.market_code, "^IXIC")
 
 
@@ -48,5 +48,5 @@ class TestCase(unittest.TestCase):
             return self.read_json(file_path)
 
         MockGetPrice.side_effect = get_price_side_effect
-        sp500 = markets.Market("S&P")
+        sp500 = Market("S&P")
         self.assertEqual(sp500.get_annualised_return(10), 0.1334)
