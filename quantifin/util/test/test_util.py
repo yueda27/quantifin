@@ -1,6 +1,8 @@
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 import json
+from yahoofinancials import YahooFinancials
 
 from quantifin.util import markets
 
@@ -32,5 +34,9 @@ class TestCase(unittest.TestCase):
         market_returns = markets.returns(markets.get_market_price_list(self.index_json))
         annualised_return = markets.annualise(market_returns, 2)
         self.assertEqual(annualised_return, (((13597.9658203125  / 7729.31982421875) ** (1/2)) - 1))
-        
+    
+    @patch.object(YahooFinancials, "get_historical_price_data")
+    def test_Market_obj_init(self, MockGetPrice):
+        nasdaq = markets.Market("NasdaqGS")
+        self.assertTrue(nasdaq.market_code, "^IXIC")
 

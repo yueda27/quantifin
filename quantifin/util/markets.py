@@ -2,7 +2,22 @@ import yahoofinancials as yf
 from enum import Enum
 
 EXCHANGES = {"NasdaqGS": "^IXIC",
+             "NYSE": "^NYA",
+             "SES": "^STI",
+             "S&P": "^GSPC",
+             "DJI": "^DJI",
+             "HKSE": "^HSI",
+             "VIX": "^VIX"
             }
+
+class Market(yf.YahooFinancials):
+    def __init__(self, market_code):
+        self.market_code = EXCHANGES[market_code]
+        super().__init__(self.market_code)
+    
+    
+
+
     
 def get_market_price_list(index_json: dict):
     index_code = list(index_json.keys())[0]
