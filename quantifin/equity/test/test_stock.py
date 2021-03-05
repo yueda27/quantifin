@@ -20,14 +20,6 @@ class TestCase(unittest.TestCase):
             json_dict = load(f)
         return json_dict
 
-    
-    def test_current_dividend(self, MockGetBeta):
-        apple= Stock("AAPL")
-
-        def get_current_dividend_side_effect():
-            dividend_path = str(self.base_path) + "/resource/market_price.json"
-            return self.read_json(dividend_path)
-    
     def test_CAPM(self, MockGetBeta):
         req_rate_CAPM = CAPM(0.02, 0.1, 1.2)
         self.assertEqual(req_rate_CAPM, 0.116)
