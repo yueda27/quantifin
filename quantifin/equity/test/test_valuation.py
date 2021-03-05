@@ -57,3 +57,9 @@ class TestCase(unittest.TestCase):
     def get_dividend_side_effect(self, start_date, end_date):
         dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
         return self.read_json(dividend_path)
+    
+    
+    def test_three_stage_growth(self, MockGetBeta):
+        stock = Stock("D05.SI")
+        
+

@@ -25,5 +25,4 @@ def forward_pe(payout_ratio: float, growth_rate: float, req_rate: float, eps: fl
 '''
  TODO:
     Three stage Dividend Discount
-    Forward PE Ratio
  ''' 

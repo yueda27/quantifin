@@ -98,7 +98,3 @@ class TestCase(unittest.TestCase):
             return(self.read_json(str(self.base_path) + '/resource/financial_statements/income_stmts.json'))
         if(stmt_type == "balance"):
             return(self.read_json(str(self.base_path) + '/resource/financial_statements/balance_sheet_stmts.json'))
-        
-
-##TODO:
-    #- ROE IMPLEMENTATION
