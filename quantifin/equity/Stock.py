@@ -58,6 +58,8 @@ class Stock(yf.YahooFinancials):
         return previous_year(now)
 
     def _calculate_full_dividend(self, dividend_resp: dict):
+        if dividend_resp[self.stock_code] is None:
+            return 0
         dividends = [payout['amount'] for payout in dividend_resp[self.stock_code]]
         return round(sum(dividends), 3)
 
@@ -65,7 +67,10 @@ class Stock(yf.YahooFinancials):
         ###Helper functions
         
         def calculate_payout(cash_flow):
-            div_payout = abs(int(cash_flow['dividendsPaid']))
+            try:
+                div_payout = abs(int(cash_flow['dividendsPaid']))
+            except KeyError:
+                return 0
             net_income = int(cash_flow['netIncome'])
             if net_income < 0:
                 return None
