@@ -34,11 +34,15 @@ class TestCase(unittest.TestCase):
 
         not_dec = datetime(2019, 11, 29)
         self.assertEqual(stock._get_FY_dividend_period(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
+    
 
     def test_calculate_dividend(self, MockGetBeta):
         stock = Stock("D05.SI")
         dividend_resp = self.read_json(str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json")
         self.assertEqual(stock._calculate_full_dividend(dividend_resp), 1.35)
+        amzn = Stock("AMZN")
+        dividend_resp = {'AMZN': None}
+        self.assertEqual(amzn._calculate_full_dividend(dividend_resp), 0)
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_get_current_dividend(self, MockDividend, MockGetBeta):

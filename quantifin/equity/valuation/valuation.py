@@ -5,6 +5,8 @@ def CAPM(risk_free: float, market_premium: float, beta: float):
     return risk_free + beta * (market_premium - risk_free)
 
 def gordon_growth_valuation(current_dividend: float, req_rate: float, growth_rate: float):
+    if current_dividend == 0:
+        raise ValueError("Dividend provided is 0. Result using this valuation method is invalid")
     if  __any_negative_value([current_dividend, req_rate]):
         raise ValueError("Invalid value. Either current_dividend or required rate is negative")
     return round((current_dividend * (growth_rate + 1)) / (req_rate - growth_rate), 3)

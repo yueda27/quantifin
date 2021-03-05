@@ -52,7 +52,13 @@ class TestCase(unittest.TestCase):
         self.assertRaises(ValueError, valuation.gordon_growth_valuation, -2, req_rate, growth_rate)
         self.assertRaises(ValueError, valuation.gordon_growth_valuation, current_dividend, -0.116, growth_rate)
         self.assertEqual(valuation.gordon_growth_valuation(current_dividend, req_rate, growth_rate), 21.828)
+
     
+    @patch.object(yf.YahooFinancials, 'get_daily_dividend_data', return_value={'AMZN': None})
+    def test_gordon_growth_no_dividend_error(self,MockDividend, MockGetBeta):
+        amzn = Stock("AMZN")
+        current_dividend = amzn.full_year_dividend()
+        self.assertRaises(ValueError, valuation.gordon_growth_valuation, current_dividend, 0.12, 0.05)
     
     def get_dividend_side_effect(self, start_date, end_date):
         dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
