@@ -52,7 +52,7 @@ class TestCase(unittest.TestCase):
     def test_average_payout_ratio(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
         stock = Stock("D05.SI")
-        cf = stock.YfApi.get_financial_stmts('annual', 'cash')
+        cf = stock.get_financial_stmts('annual', 'cash')
         correct = {'2020': 0.511, '2019': 0.615, '2018': 0.565, '2017': 0.315}
         self.assertEqual(stock.get_dividend_payout_ratio_history(), correct)
         self.assertEqual(stock.average_dividend_payout_ratio(stock.get_dividend_payout_ratio_history()), 0.501)

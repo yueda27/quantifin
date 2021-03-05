@@ -1,9 +1,9 @@
 import yahoofinancials as yf
 import datetime
-class Stock:
+class Stock(yf.YahooFinancials):
     def __init__(self, stock_code):
         self.stock_code = stock_code
-        self.YfApi = yf.YahooFinancials(self.stock_code)
+        super().__init__(stock_code)
         self.__beta = None 
         self.__cash_flow = None
         self.__income = None
@@ -16,32 +16,32 @@ class Stock:
     @property
     def beta(self):
         if self.__beta == None:
-            self.__beta = self.YfApi.get_beta()
+            self.__beta = self.get_beta()
         return self.__beta
 
     @property
     def cash_flow_stmts(self):
         if self.__cash_flow == None:
-            self.__cash_flow =  self.YfApi.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
+            self.__cash_flow =  self.get_financial_stmts("annual", "cash")['cashflowStatementHistory'][self.stock_code]
         return self.__cash_flow
     
     @property
     def income_stmts(self):
         if self.__income == None:
-            self.__income = self.YfApi.get_financial_stmts("annual", "income")['incomeStatementHistory'][self.stock_code]
+            self.__income = self.get_financial_stmts("annual", "income")['incomeStatementHistory'][self.stock_code]
         return self.__income
     
     @property
     def balance_sheet_stmts(self):
         if self.__balance_sheets == None:
-            self.__balance_sheets = self.YfApi.get_financial_stmts("annual", "balance")['balanceSheetHistory'][self.stock_code]
+            self.__balance_sheets = self.get_financial_stmts("annual", "balance")['balanceSheetHistory'][self.stock_code]
         return self.__balance_sheets
 
 
     def full_year_dividend(self):
         now_date = datetime.datetime.now()
         start_of_year, end_of_year = self._get_FY_dividend_period(now_date)
-        dividend_resp = self.YfApi.get_daily_dividend_data(start_of_year.strftime("%Y-%m-%d"), end_of_year.strftime("%Y-%m-%d"))
+        dividend_resp = self.get_daily_dividend_data(start_of_year.strftime("%Y-%m-%d"), end_of_year.strftime("%Y-%m-%d"))
         return self._calculate_full_dividend(dividend_resp)
     
     def _get_FY_dividend_period(self, now: datetime.datetime):
