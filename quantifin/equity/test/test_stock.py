@@ -61,6 +61,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual(stock.get_dividend_payout_ratio_history(), correct)
         self.assertEqual(stock.average_dividend_payout_ratio(stock.get_dividend_payout_ratio_history()), 0.501)
     
+    @patch.object(Stock, 'get_financial_stmts')
+    def test_payout_history_no_payout(self, MockCashFlow, MockGetBeta):
+        MockCashFlow.side_effect = lambda p, s: self.read_json(str(self.base_path) + '/resource/financial_statements/AMZN_cash_flow_stmts.json')
+        amzn = Stock("AMZN")
+        self.assertEqual(amzn.get_dividend_payout_ratio_history(), {'2020': 0, "2019": 0, "2018": 0, "2017": 0})
+    
     @patch.object(yf.YahooFinancials, "get_financial_stmts")
     def test_get_roe_history(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect

@@ -40,6 +40,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(valuation.forward_pe(payout, growth, req_rate, forward_eps), 63.902)
         self.assertRaises(Warning, valuation.forward_pe, payout, growth,req_rate, -10)
         
+    @patch.object(yf.YahooFinancials, "get_financial_stmts")
+    def test_forward_pe_no_payout(self, MockCashFlow, MockGetBeta):
+        MockCashFlow.side_effect = lambda p, s: self.read_json(str(self.base_path) + '/resource/financial_statements/AMZN_cash_flow_stmts.json')
+        amzn = Stock("AMZN")
+        payout_history = amzn.get_dividend_payout_ratio_history()
+        payout = amzn.average_dividend_payout_ratio(payout_history)
+        self.assertEqual(payout, 0)
+        self.assertRaises(ValueError, valuation.forward_pe, payout, 0.05, 0.1, 20)
+
+
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     @patch.object(yf.YahooFinancials, "get_financial_stmts")
     def test_gordon_growth_valuation(self, MockGetFnStmts, MockDividend, MockGetBeta):
