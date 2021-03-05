@@ -14,3 +14,16 @@ def __any_negative_value(values: list):
         if val < 0:
              return True
     return False
+
+def forward_pe(payout_ratio: float, growth_rate: float, req_rate: float, eps: float):
+    if __any_negative_value([payout_ratio, growth_rate, eps]):
+        raise Warning("One or more of the values supplied is negative. This may reduce the effectiveness of the result")
+    exp_payout = payout_ratio * (1 + growth_rate)
+    forward_pe = exp_payout / (req_rate - growth_rate)
+    return round(forward_pe * eps, 3)
+
+'''
+ TODO:
+    Three stage Dividend Discount
+    Forward PE Ratio
+ ''' 
