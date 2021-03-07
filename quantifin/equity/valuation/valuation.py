@@ -24,7 +24,7 @@ def forward_pe(payout_ratio: float, growth_rate: float, req_rate: float, eps: fl
     forward_pe = exp_payout / (req_rate - growth_rate)
     return round(forward_pe * eps, 3)
 
-def multistage_growth(current_dividend: float, req_rate: float, growth_trajectory: list):
+def multistage_growth(current_cf: float, req_rate: float, growth_trajectory: list):
     ##Helper methods
     def no_terminal_value(trajectory: list):
         return trajectory[-1][0] is not None
@@ -32,11 +32,11 @@ def multistage_growth(current_dividend: float, req_rate: float, growth_trajector
     def terminal_value(dividend, growth_rate, req_rate):
         return (dividend * (1 + growth_rate))/ (req_rate - growth_rate)
     
-    def calculate_dividend_projection(growth_tuple: tuple, current_dividend):
+    def calculate_dividend_projection(growth_tuple: tuple, current_cf):
         projection = []
         for i in range(growth_tuple[0]):
-            current_dividend *= (1 + growth_tuple[1])
-            projection.append(current_dividend)     
+            current_cf *= (1 + growth_tuple[1])
+            projection.append(current_cf)     
         return projection
     
     def present_value_reduce(accum, value, discount_rate):
@@ -48,8 +48,8 @@ def multistage_growth(current_dividend: float, req_rate: float, growth_trajector
 
     proj_dividends = []
     for growth in growth_trajectory[:-1]:   
-        proj_dividends.extend(calculate_dividend_projection(growth, current_dividend))
-        current_dividend =  proj_dividends[-1]  #Update current dividend based on projection
+        proj_dividends.extend(calculate_dividend_projection(growth, current_cf))
+        current_cf =  proj_dividends[-1]  #Update current dividend based on projection
 
     proj_dividends[-1] += (terminal_value(proj_dividends[-1], growth_trajectory[-1][1], req_rate))   #Append terminal value
     partial_present_value_reduce = partial(present_value_reduce, discount_rate = req_rate)  #Generate partial reduce func with discount rate = req rate

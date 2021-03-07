@@ -8,6 +8,7 @@ class Stock(yf.YahooFinancials):
         self.__cash_flow = None
         self.__income = None
         self.__balance_sheets = None
+        self.__key_stats = None
 
     @staticmethod
     def get_date_key(input_dict: dict):
@@ -18,6 +19,26 @@ class Stock(yf.YahooFinancials):
         if self.__beta == None:
             self.__beta = self.get_beta()
         return self.__beta
+    
+    @property
+    def trailing_eps(self):
+        try:
+            return self.key_stats['trailingEps']
+        except KeyError:
+            return None 
+    
+    @property
+    def forward_eps(self):
+        try:
+            return self.key_stats['forwardEps']
+        except KeyError:
+            return None
+
+    @property
+    def key_stats(self):
+        if self.__key_stats is None:
+            self.__key_stats = self.get_key_statistics_data()[self.stock_code]
+        return self.__key_stats
 
     @property
     def cash_flow_stmts(self):

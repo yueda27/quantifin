@@ -25,6 +25,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(stock.beta, 1.2)
         self.assertTrue(MockGetBeta.called)
     
+    @patch.object(Stock, "get_key_statistics_data")
+    def test_key_stats(self, MockKeyStats):
+        def side_effect():
+            return self.read_json(str(self.base_path) + "/resource/key_statistics.json")
+        MockKeyStats.side_effect = side_effect
+        stock = Stock("D05.SI")
+
+        self.assertEqual(stock.trailing_eps, 1.856)
+        self.assertEqual(stock.forward_eps, 2.45)
+        self.assertTrue(MockKeyStats.called)
+    
     @patch.object(yf.YahooFinancials, 'get_financial_stmts')
     def test_cash_flow_resp(self, MockGetFnStmts):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
