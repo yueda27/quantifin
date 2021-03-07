@@ -34,6 +34,7 @@ class TestCase(unittest.TestCase):
 
         not_dec = datetime(2019, 11, 29)
         self.assertEqual(stock._get_FY_dividend_period(not_dec), [datetime(2018, 1, 1), datetime(2018, 12, 30)])
+    
 
     def test_calculate_dividend(self, MockGetBeta):
         stock = Stock("D05.SI")
@@ -42,6 +43,9 @@ class TestCase(unittest.TestCase):
         
         self.assertEqual(stock._calculate_full_dividend(dividend_resp), 1.35)
         self.assertEqual(stock._calculate_full_dividend({"D05.SI": None}), 0)
+        amzn = Stock("AMZN")
+        dividend_resp = {'AMZN': None}
+        self.assertEqual(amzn._calculate_full_dividend(dividend_resp), 0)
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_get_current_dividend(self, MockDividend, MockGetBeta):
@@ -59,6 +63,12 @@ class TestCase(unittest.TestCase):
         correct = {'2020': 0.511, '2019': 0.615, '2018': 0.565, '2017': 0.315}
         self.assertEqual(stock.get_dividend_payout_ratio_history(), correct)
         self.assertEqual(stock.average_dividend_payout_ratio(stock.get_dividend_payout_ratio_history()), 0.501)
+    
+    @patch.object(Stock, 'get_financial_stmts')
+    def test_payout_history_no_payout(self, MockCashFlow, MockGetBeta):
+        MockCashFlow.side_effect = lambda p, s: self.read_json(str(self.base_path) + '/resource/financial_statements/AMZN_cash_flow_stmts.json')
+        amzn = Stock("AMZN")
+        self.assertEqual(amzn.get_dividend_payout_ratio_history(), {'2020': 0, "2019": 0, "2018": 0, "2017": 0})
     
     @patch.object(yf.YahooFinancials, "get_financial_stmts")
     def test_get_roe_history(self, MockGetFnStmts, MockGetBeta):

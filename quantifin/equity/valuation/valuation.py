@@ -7,6 +7,8 @@ def CAPM(risk_free: float, market_premium: float, beta: float):
     return risk_free + beta * (market_premium - risk_free)
 
 def gordon_growth_valuation(current_dividend: float, req_rate: float, growth_rate: float):
+    if current_dividend == 0:
+        raise ValueError(__valuation_error_message("Dividend"))
     if  __any_negative_value([current_dividend, req_rate]):
         raise ValueError("Invalid value. Either current_dividend or required rate is negative")
     return round((current_dividend * (growth_rate + 1)) / (req_rate - growth_rate), 3)
@@ -18,6 +20,8 @@ def __any_negative_value(values: list):
     return False
 
 def forward_pe(payout_ratio: float, growth_rate: float, req_rate: float, eps: float):
+    if payout_ratio == 0:
+        raise ValueError(__valuation_error_message("Payout"))
     if __any_negative_value([payout_ratio, growth_rate, eps]):
         raise Warning("One or more of the values supplied is negative. This may reduce the effectiveness of the result")
     exp_payout = payout_ratio * (1 + growth_rate)
@@ -56,6 +60,8 @@ def multistage_growth(current_cf: float, req_rate: float, growth_trajectory: lis
 
     return round(reduce(partial_present_value_reduce, proj_dividends[::-1], 0), 3)
 
+def __valuation_error_message(value):
+    return f"{value} provided is 0. Result using this valuation method is invalid"
 
 '''
  TODO:

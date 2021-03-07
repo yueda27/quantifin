@@ -88,7 +88,10 @@ class Stock(yf.YahooFinancials):
         ###Helper functions
         
         def calculate_payout(cash_flow):
-            div_payout = abs(int(cash_flow['dividendsPaid']))
+            try:
+                div_payout = abs(int(cash_flow['dividendsPaid']))
+            except KeyError:
+                return 0
             net_income = int(cash_flow['netIncome'])
             if net_income < 0:
                 return 0
