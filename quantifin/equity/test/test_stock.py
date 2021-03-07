@@ -37,8 +37,11 @@ class TestCase(unittest.TestCase):
 
     def test_calculate_dividend(self, MockGetBeta):
         stock = Stock("D05.SI")
+
         dividend_resp = self.read_json(str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json")
+        
         self.assertEqual(stock._calculate_full_dividend(dividend_resp), 1.35)
+        self.assertEqual(stock._calculate_full_dividend({"D05.SI": None}), 0)
 
     @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
     def test_get_current_dividend(self, MockDividend, MockGetBeta):

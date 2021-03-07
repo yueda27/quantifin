@@ -61,7 +61,6 @@ class TestCase(unittest.TestCase):
         current_dividend = stock.full_year_dividend()
         req_rate  =valuation.CAPM(0.02, 0.1, stock.beta)
         growth_trajectory = [(3, 0.1), (3, 0.05), (None, 0.01)]
-        print(f"Dividend: {current_dividend} Req Rate {req_rate}")
 
         self.assertRaises(ValueError, valuation.multistage_growth, current_dividend, req_rate, [(2, 0.1), (2, 0.05), (2, 0.02)]) #No terminal value
         self.assertEqual(valuation.multistage_growth(current_dividend, req_rate, growth_trajectory), 17.631)
