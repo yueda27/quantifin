@@ -54,6 +54,10 @@ class TestCase(unittest.TestCase):
         stock = Stock("D05.SI")
         self.assertEqual(stock.full_year_dividend(), 1.35)
     
+    def get_dividend_side_effect(self, start_date, end_date):
+        dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
+        return self.read_json(dividend_path)
+        
     #Payout Ratio tests
     @patch.object(yf.YahooFinancials, 'get_financial_stmts')
     def test_average_payout_ratio(self, MockGetFnStmts, MockGetBeta):
@@ -97,11 +101,7 @@ class TestCase(unittest.TestCase):
         stock = Stock("D05.SI")
         self.assertEqual(stock.growth_rate(), 0.051)
          
-
     
-    def get_dividend_side_effect(self, start_date, end_date):
-        dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
-        return self.read_json(dividend_path)
 
     
     def get_financial_stmts_side_effect(self, period, stmt_type):
