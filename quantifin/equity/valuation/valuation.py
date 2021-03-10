@@ -65,5 +65,5 @@ def __valuation_error_message(value):
 
 '''
  TODO:
-    Three stage Dividend Discount
+    Cash Flow valuation
  ''' 

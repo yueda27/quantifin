@@ -1,5 +1,6 @@
 import yahoofinancials as yf
 import datetime
+from functools import partial
 class Stock(yf.YahooFinancials):
     def __init__(self, stock_code):
         self.stock_code = stock_code
@@ -140,4 +141,32 @@ class Stock(yf.YahooFinancials):
         if roe < 0:
             raise ValueError("ROE is negative. Invalid value for growth rate")
         return round((1 - payout) * roe, 3)
+
+    def get_fcf_history(self):
+        def calculate_net_fcf(cf_stmt):
+            p_extract_key  =partial(extract_key, cf_stmt)
+            operating = p_extract_key('totalCashFromOperatingActivities')
+            capex = p_extract_key("capitalExpenditures")
+            return operating + capex
+
+        def extract_key(cf,key):
+            try:
+                return cf[key]
+            except KeyError:
+                return 0
+
+        cf_history = {}
+        for period in self.cash_flow_stmts:
+            date_key = Stock.get_date_key(period)
+            cf_history[date_key[:4]] = calculate_net_fcf(period[date_key])
+        return cf_history
     
+    def fcf_growth_rate(self):
+        fcf_history = [i for i in self.get_fcf_history().values()]
+        growth_comparator = list(zip(fcf_history, fcf_history[1:]))
+        cummulative_growth = 0
+        for comp in growth_comparator:
+            cummulative_growth += (comp[0] / comp[1])
+        return round(((cummulative_growth / len(growth_comparator)) - 1), 3)
+        
+

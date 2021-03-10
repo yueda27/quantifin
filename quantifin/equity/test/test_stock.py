@@ -9,7 +9,7 @@ from quantifin.equity import Stock
 from quantifin.equity.valuation import *
 from quantifin.util import markets
 
-@patch.object(yf.YahooFinancials, 'get_beta', return_value = 1.2)
+@patch.object(Stock, 'get_beta', return_value = 1.2)
 class TestCase(unittest.TestCase):
     def setUp(self):
         self.base_path = Path(__file__).parent
@@ -47,7 +47,7 @@ class TestCase(unittest.TestCase):
         dividend_resp = {'AMZN': None}
         self.assertEqual(amzn._calculate_full_dividend(dividend_resp), 0)
 
-    @patch.object(yf.YahooFinancials, 'get_daily_dividend_data')
+    @patch.object(Stock, 'get_daily_dividend_data')
     def test_get_current_dividend(self, MockDividend, MockGetBeta):
             
         MockDividend.side_effect = self.get_dividend_side_effect
@@ -57,9 +57,9 @@ class TestCase(unittest.TestCase):
     def get_dividend_side_effect(self, start_date, end_date):
         dividend_path = str(self.base_path) + "/resource/dividend/2020_dbs_dividend.json"
         return self.read_json(dividend_path)
-        
+
     #Payout Ratio tests
-    @patch.object(yf.YahooFinancials, 'get_financial_stmts')
+    @patch.object(Stock, 'get_financial_stmts')
     def test_average_payout_ratio(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
         stock = Stock("D05.SI")
@@ -74,7 +74,7 @@ class TestCase(unittest.TestCase):
         amzn = Stock("AMZN")
         self.assertEqual(amzn.get_dividend_payout_ratio_history(), {'2020': 0, "2019": 0, "2018": 0, "2017": 0})
     
-    @patch.object(yf.YahooFinancials, "get_financial_stmts")
+    @patch.object(Stock, "get_financial_stmts")
     def test_get_roe_history(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
 
@@ -88,21 +88,34 @@ class TestCase(unittest.TestCase):
         self.assertRaises(ValueError, stock.calculate_roe, 100, -100)
         self.assertEqual(stock.calculate_roe(50, 300), 0.167)
     
-    @patch.object(yf.YahooFinancials, "get_financial_stmts")
+    @patch.object(Stock, "get_financial_stmts")
     def test_get_average_roe(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
         stock = Stock("D05.SI")
         roe = stock.get_roe_history()
         self.assertEqual(stock.average_roe(roe), 0.102)
 
-    @patch.object(yf.YahooFinancials, "get_financial_stmts")
+    @patch.object(Stock, "get_financial_stmts")
     def test_growth_rate(self, MockGetFnStmts, MockGetBeta):
         MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
         stock = Stock("D05.SI")
         self.assertEqual(stock.growth_rate(), 0.051)
-         
     
-
+    ####################
+    #Test Free Cash Flow
+    ####################
+    @patch.object(Stock, "get_financial_stmts")
+    def test_fcf_history(self, MockGetFnStmts, MockGetBeta):
+        MockGetFnStmts.side_effect = lambda p, s: self.read_json(str(self.base_path) + '/resource/financial_statements/AMZN_cash_flow_stmts.json')
+        stock = Stock("AMZN")
+        correct_result = {"2020": 25924000000, "2019": 21653000000 , "2018": 17296000000, "2017": 6410000000}
+        self.assertEqual(stock.get_fcf_history(), correct_result)
+    
+    @patch.object(Stock, "get_fcf_history", return_value = {"2020": 1000, "2019": 800, "2018": 600,"2017": 500})
+    def test_fcf_growth_rate(self, MockFCFHistory, MockGetBeta):
+        stock = Stock("D05.SI")
+        self.assertEqual(stock.fcf_growth_rate(), 0.261)
+        self.assertTrue(MockFCFHistory.called)
     
     def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):
