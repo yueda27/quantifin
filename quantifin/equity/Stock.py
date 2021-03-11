@@ -18,7 +18,7 @@ class Stock(yf.YahooFinancials):
     @property
     def beta(self):
         if self.__beta == None:
-            self.__beta = self.get_beta()
+            self.__beta = self.get_beta() if self.get_beta() else 1
         return self.__beta
     
     @property

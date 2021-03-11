@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 EXCHANGES = {"NasdaqGS": "^IXIC",
+             "NasdaqCM": "^RCMP",
              "NYSE": "^NYA",
              "SES": "^STI",
              "S&P": "^GSPC",
