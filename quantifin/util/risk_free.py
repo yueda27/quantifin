@@ -15,4 +15,15 @@ class RiskFree(YahooFinancials):
                 raise KeyError(f"Year: {year} provided does not have an index")
 
         self.market_code = __get_yield_mapping(year)
+        super().__init__(self.market_code)
+        self.year = year
+        self.__spot_yield = None
 
+    @property
+    def spot_yield(self):
+        if not self.__spot_yield:
+            self.__spot_yield = self.get_prev_close_price()
+
+        if self.__spot_yield is None:
+            return None
+        return self.__spot_yield / 100
