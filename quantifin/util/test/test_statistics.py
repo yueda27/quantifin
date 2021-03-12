@@ -13,8 +13,5 @@ class TestCase(unittest.TestCase):
     
     def test_coefficient_of_variation(self):
         self.assertEqual(coefficient_of_variation(self.test_return),0.4001)
-    
-    def test_skew(self):
-        self.assertEqual(skew(self.test_return), -0.2959313655596756)
         
 
