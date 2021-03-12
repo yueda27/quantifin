@@ -36,6 +36,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(sortino_ratio(return_rates, 0), 4.417)
         self.assertEqual(sortino_ratio(return_rates, 0.03), 1.863)
     
+    def test_alpha(self):
+        self.assertEqual(alpha(0.1, 0.08, 0.03, 1.2), 0.01) 
     
 def read_price_list(path):
     with open(path, "r") as r:
