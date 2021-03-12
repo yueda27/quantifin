@@ -21,10 +21,13 @@ class TestCase(unittest.TestCase):
     
     def test_stdev_excess_return(self):
         price_return = [0.0818, 0.1047, 0.0247, 0.044, 0.2524, 0.0520, 0.2278, 0.28, 0.0387, 0.0598, 0.0183, 0.0586, 0.0051, 0.0541, 0.0617]
-        self.assertEqual(stdev_excess_return(price_return, 0.03), 0.08804)
+        self.assertEqual(stdev_excess_return(price_return, 0.03), 0.10829)
     
-    def test_sharpe_ratio(self):
-        self.assertEqual(sharpe_ratio(self.price_list, 0.0001), 0.194)
+    def test_sharpe_ratio_ex_post(self):
+        self.assertEqual(sharpe_ratio_ex_post(self.price_list, 0.0001), 0.191)
+    
+    def test_sharpe_ratio_ex_ante(self):
+        self.assertEqual(sharpe_ratio_ex_ante(0.1, 0.03, 0.16), 0.43750)
     
     
 def read_price_list(path):
