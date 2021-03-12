@@ -25,12 +25,16 @@ class TestCase(unittest.TestCase):
 
     def test_sharpe_ratio_ex_post(self):
         returns = price_returns(self.price_list)
-        print("standard dev")
         self.assertEqual(sharpe_ratio_ex_post(self.sample_return, 0.02), 3.6141)
         self.assertEqual(sharpe_ratio_ex_post(returns, 0.005), 1.0652)
     
     def test_sharpe_ratio_ex_ante(self):
         self.assertEqual(sharpe_ratio_ex_ante(0.1, 0.03, 0.16), 0.43750)
+
+    def test_sortino_ratio(self):
+        return_rates = [0.17, 0.15, 0.23, -0.05, 0.12, 0.09, 0.13, -0.04]
+        self.assertEqual(sortino_ratio(return_rates, 0), 4.417)
+        self.assertEqual(sortino_ratio(return_rates, 0.03), 1.863)
     
     
 def read_price_list(path):

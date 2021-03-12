@@ -26,6 +26,15 @@ def __calculate_differential_return(returns, benchmark):
 def __sample_average(iterable):
     return sum(iterable) / len(iterable)
 
+def sortino_ratio(returns_list, benchmark):
+    avg_return = (sum(returns_list) / len(returns_list)) - benchmark
+    differential_return = [re - benchmark for re in returns_list]
+    downside_deviation = __calculate_downside_deviation(returns_list, benchmark)
+    return round(avg_return / downside_deviation, 3)
+
+def __calculate_downside_deviation(iterable, benchmark):
+    downside_deviation_list = [abs((it - benchmark) ** 2) for it in iterable if (it - benchmark) < 0]
+    return sqrt(sum(downside_deviation_list)/ len(iterable))
 
 
 
