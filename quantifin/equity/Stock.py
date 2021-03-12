@@ -168,5 +168,3 @@ class Stock(yf.YahooFinancials):
         for comp in growth_comparator:
             cummulative_growth += (comp[0] / comp[1])
         return round(((cummulative_growth / len(growth_comparator)) - 1), 3)
-        
-
