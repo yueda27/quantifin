@@ -36,14 +36,5 @@ def __calculate_downside_deviation(iterable, benchmark):
     downside_deviation_list = [abs((it - benchmark) ** 2) for it in iterable if (it - benchmark) < 0]
     return sqrt(sum(downside_deviation_list)/ len(iterable))
 
-
-
-
-
-
-
-'''TODO:
-    Alpha
-    Jensen Alpha
-    R-Squared
-'''
+def alpha(realised_return, market_return, risk_free, beta):
+    return round(realised_return - (risk_free + ((market_return - risk_free) * beta)), 3)
