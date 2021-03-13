@@ -175,15 +175,23 @@ class Stock(yf.YahooFinancials):
     
     def get_sharpe_ratio_ex_post(self, start_date, end_date, period, benchmark_rate = None):
         if benchmark_rate is None:
-            benchmark_rate = RiskFree(10).yield_history(start_date, end_date, period)[:-1]
-        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
-        differential_return = price_returns(prices)
+            benchmark_rate = self.__default_benchmark(start_date, end_date, period)
+        differential_return = self.__get_diff_returns(start_date, end_date, period)
         return sharpe_ratio_ex_post(differential_return, benchmark_rate)
+    
+    def __default_benchmark(self, start, end, period):
+        return RiskFree(10).yield_history(start, end, period)[:-1]
+    
+    def __get_diff_returns(self, start_date, end_date, period):
+        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
+        return price_returns(prices)
 
-
-
+    def get_sortino_ratio(self, start_date, end_date, period, benchmark_rate = None):
+        if benchmark_rate is None:
+            benchmark_rate = self.__default_benchmark(start_date, end_date, period)
+        differential_return = self.__get_diff_returns(start_date, end_date, period)
+        return sortino_ratio(differential_return, benchmark_rate)
 '''TODO:
-    sortino
     alpha
     coeff-variation
 '''
