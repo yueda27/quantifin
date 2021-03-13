@@ -43,7 +43,7 @@ class TestCase(unittest.TestCase):
         return_rates = [0.17, 0.15, 0.23, -0.05, 0.12, 0.09, 0.13, -0.04]
         self.assertRaises(ValueError, sortino_ratio, self.sample_return, self.period_benchmark[:-1])
         self.assertEqual(sortino_ratio(return_rates, [0 for i in range(len(return_rates))]), 4.417)
-        # self.assertEqual(sortino_ratio(return_rates, [0.03 for range(len(return_rates))]), 1.863)
+        self.assertEqual(sortino_ratio(return_rates, [0.03 for i in range(len(return_rates))]), 1.863)
     
     def test_alpha(self):
         self.assertEqual(alpha(0.1, 0.08, 0.03, 1.2), 0.01) 
