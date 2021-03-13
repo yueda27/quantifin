@@ -7,7 +7,7 @@ from datetime import datetime
 
 from quantifin.equity import Stock
 from quantifin.equity.valuation import *
-from quantifin.util import markets
+from quantifin.util import markets, RiskFree
 
 @patch.object(Stock, 'get_beta', return_value = 1.2)
 class TestCase(unittest.TestCase):
@@ -116,7 +116,22 @@ class TestCase(unittest.TestCase):
         stock = Stock("D05.SI")
         self.assertEqual(stock.fcf_growth_rate(), 0.261)
         self.assertTrue(MockFCFHistory.called)
-    
+
+    #########################
+    #Test Statistics & Greeks
+    #########################
+    @patch.object(Stock, "get_historical_price_data")
+    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008, 0.009])
+    def test_sharpe_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
+        MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
+        s = Stock("AMZN")
+        benchmark_rates = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008]
+
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.30305)
+        self.assertFalse(MockYieldHistory.called)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.30305)
+        self.assertTrue(MockYieldHistory.called)
+
     def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):
             return(self.read_json(str(self.base_path) + '/resource/financial_statements/cash_flow_stmts.json'))

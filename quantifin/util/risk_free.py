@@ -1,4 +1,5 @@
 from yahoofinancials import YahooFinancials
+from .helper import extract_prices
 
 YIELD_MAPPING = {
     5: "^FVX",
@@ -27,3 +28,8 @@ class RiskFree(YahooFinancials):
         if self.__spot_yield is None:
             return None
         return self.__spot_yield / 100
+    
+    def yield_history(self, start_date, end_date, period):
+        history = self.get_historical_price_data(start_date, end_date, period)
+        history = extract_prices(history, self.market_code)
+        return [round(price / 100, 3) for price in history]
