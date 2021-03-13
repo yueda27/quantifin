@@ -23,10 +23,17 @@ class TestCase(unittest.TestCase):
         self.assertEqual(price_returns(self.price_list), correct_price_returns)
         self.assertEqual(len(price_returns(self.price_list)), price_list_count - 1)
 
+    def test_calculate_differential_return(self):
+        period_benchmark = [0.02, 0.03, 0.026, 0.01, 0.022, 0.022, 0.01, 0.04, 0.01]
+        self.assertRaises(ValueError, calculate_differential_returns, self.sample_return, period_benchmark[:-1])
+        correct_result = [0.08, 0.17, 0.126, 0.23, 0.162, 0.178, 0.19, 0.12, 0.13]
+        self.assertEqual(calculate_differential_returns(self.sample_return, period_benchmark), correct_result)
+
     def test_sharpe_ratio_ex_post(self):
         returns = price_returns(self.price_list)
-        self.assertEqual(sharpe_ratio_ex_post(self.sample_return, 0.02), 3.6141)
-        self.assertEqual(sharpe_ratio_ex_post(returns, 0.005), 1.0652)
+        benchmark = [0.02 for i in range(len(self.sample_return))]
+        self.assertEqual(sharpe_ratio_ex_post(self.sample_return, benchmark), 3.6141)
+        self.assertEqual(sharpe_ratio_ex_post(returns, [0.005 for i in range(len(returns))]), 1.06527)
     
     def test_sharpe_ratio_ex_ante(self):
         self.assertEqual(sharpe_ratio_ex_ante(0.1, 0.03, 0.16), 0.43750)

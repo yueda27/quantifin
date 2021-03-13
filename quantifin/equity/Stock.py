@@ -1,6 +1,10 @@
 import yahoofinancials as yf
 import datetime
 from functools import partial
+from quantifin.util.greeks import *
+from quantifin.util import RiskFree, extract_prices
+from scipy.stats import kurtosis, skew
+
 class Stock(yf.YahooFinancials):
     def __init__(self, stock_code):
         self.stock_code = stock_code
@@ -168,3 +172,18 @@ class Stock(yf.YahooFinancials):
         for comp in growth_comparator:
             cummulative_growth += (comp[0] / comp[1])
         return round(((cummulative_growth / len(growth_comparator)) - 1), 3)
+    
+    def get_sharpe_ratio_ex_post(self, start_date, end_date, period, benchmark_rate = None):
+        if benchmark_rate is None:
+            benchmark_rate = RiskFree(10).yield_history(start_date, end_date, period)[:-1]
+        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
+        differential_return = price_returns(prices)
+        return sharpe_ratio_ex_post(differential_return, benchmark_rate)
+
+
+
+'''TODO:
+    sortino
+    alpha
+    coeff-variation
+'''

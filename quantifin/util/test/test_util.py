@@ -5,6 +5,7 @@ import json
 from yahoofinancials import YahooFinancials
 
 from quantifin.util.markets import Market
+from quantifin.util import extract_prices
 
 
 class TestCase(unittest.TestCase):
@@ -50,3 +51,8 @@ class TestCase(unittest.TestCase):
         MockGetPrice.side_effect = get_price_side_effect
         sp500 = Market("S&P")
         self.assertEqual(sp500.get_annualised_return(10), 0.1334)
+    
+    def test_extract_price(self):
+        resp = self.read_json(str(self.base_path) + "/resource/historical_yield.json")
+        correct  =[1.5199999809265137,1.1269999742507935,0.6980000138282776,0.621999979019165,0.6480000019073486,0.652999997138977,0.5360000133514404,0.6930000185966492,0.6769999861717224,0.8600000143051147,0.843999981880188,0.9169999957084656]
+        self.assertEqual(extract_prices(resp, "^TNX"), correct)

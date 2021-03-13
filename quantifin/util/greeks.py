@@ -15,13 +15,19 @@ def sharpe_ratio_ex_ante(expected_return, benchmark_rate, sigma):
     return round((expected_return - benchmark_rate) / sigma, 5)
 
 
-def sharpe_ratio_ex_post(returns_list, benchmark):
-    differential_return = [__calculate_differential_return(re, benchmark) for re in returns_list]
+def sharpe_ratio_ex_post(returns_list, benchmark_list):
+    differential_return = calculate_differential_returns(returns_list, benchmark_list)
     sigma = stdev(differential_return)
     return round(__sample_average(differential_return) / sigma, 5)
 
+def calculate_differential_returns(returns, benchmark):
+    if len(returns) != len(benchmark):
+        raise ValueError("Number of returns provided does not correspond to benchmark rates provided")
+    zipped = zip(returns, benchmark)
+    return [__calculate_differential_return(pair[0], pair[1]) for pair in zipped]
+
 def __calculate_differential_return(returns, benchmark):
-    return abs(returns - benchmark)
+    return round(abs(returns - benchmark), 3)
 
 def __sample_average(iterable):
     return sum(iterable) / len(iterable)
