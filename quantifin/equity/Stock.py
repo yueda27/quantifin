@@ -207,11 +207,3 @@ class Stock(yf.YahooFinancials):
         sorted_period_key = sorted(price_list, reverse=True)        #Extra step for testability using mock
         period_return = (price_list.get(sorted_period_key[0]) / price_list.get(sorted_period_key[-1])) - 1
         return alpha(period_return, market_return, risk_free, self.beta)
-
-
-'''TODO
--yield_history & extract_price returns dict with datestamp as key
--ensure that all calculations are in descending order
-
--Explore documentation
-'''
