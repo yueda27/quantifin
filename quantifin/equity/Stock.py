@@ -181,12 +181,11 @@ class Stock(yf.YahooFinancials):
         return sharpe_ratio_ex_post(differential_return, benchmark_rate)
     
     def __default_benchmark(self, start, end, period):
-        yields = RiskFree(10).yield_history(start, end, period)
-        yields.reverse()
+        yields = RiskFree(10).yield_history(start, end, period)[1:] #drop current spot yield
         return yields
     
     def __get_diff_returns(self, start_date, end_date, period):
-        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)[::-1]
+        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
         return price_returns(prices)
 
     def get_sortino_ratio(self, start_date, end_date, period, benchmark_rate = None):
@@ -205,5 +204,14 @@ class Stock(yf.YahooFinancials):
         today = datetime.datetime.now()
         start_date = datetime.datetime(today.year - years, today.month, today.day)
         price_list = extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), "monthly"), self.stock_code)
-        period_return = (price_list[-1] / price_list[0]) - 1
+        sorted_period_key = sorted(price_list, reverse=True)        #Extra step for testability using mock
+        period_return = (price_list.get(sorted_period_key[0]) / price_list.get(sorted_period_key[-1])) - 1
         return alpha(period_return, market_return, risk_free, self.beta)
+
+
+'''TODO
+-yield_history & extract_price returns dict with datestamp as key
+-ensure that all calculations are in descending order
+
+-Explore documentation
+'''
