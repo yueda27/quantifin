@@ -3,7 +3,7 @@ import datetime
 from functools import partial
 from quantifin.util.greeks import *
 from quantifin.util import statistics
-from quantifin.util import RiskFree, extract_prices
+from quantifin.util import RiskFree, extract_prices 
 from scipy.stats import kurtosis, skew
 
 class Stock(yf.YahooFinancials):

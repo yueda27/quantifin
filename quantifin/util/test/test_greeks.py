@@ -14,16 +14,6 @@ class TestCase(unittest.TestCase):
         self.sample_return = [-0.06, 0.2, -0.1, 0.24, -0.14, 0.2, 0.2, 0.16, 0.14]
         self.period_benchmark =  [0.02, 0.03, 0.026, 0.01, 0.022, 0.022, 0.01, 0.04, 0.01]
     
-    def test_price_return(self):
-        price_list_count = len(self.price_list)
-        price_list = [100, 80, 70, 40]
-        result = [0.25, 0.1428571428571428, 0.75]
-        correct_price_returns = read_price_list(str(self.base_path) + "/resource/price_return.json")
-        
-        self.assertEqual(price_returns(price_list), result)
-        self.assertEqual(price_returns(self.price_list), correct_price_returns)
-        self.assertEqual(len(price_returns(self.price_list)), price_list_count - 1)
-
     def test_calculate_differential_return(self):
         self.assertRaises(ValueError, calculate_differential_returns, self.sample_return, self.period_benchmark[:-1])
         correct_result = [0.08, 0.17, 0.126, 0.23, 0.162, 0.178, 0.19, 0.12, 0.13]

@@ -1,13 +1,14 @@
 from statistics import stdev
 from functools import reduce
 from math import sqrt
+from .helper import price_returns
 
-def price_returns(price_list):
-    combined_price = zip(price_list, price_list[1:])
-    returns = []
-    for i in combined_price:
-        returns.append((i[0] / i[1]) - 1)
-    return returns
+# def price_returns(price_list):
+#     combined_price = zip(price_list, price_list[1:])
+#     returns = []
+#     for i in combined_price:
+#         returns.append((i[0] / i[1]) - 1)
+#     return returns
 
 
 def sharpe_ratio_ex_ante(expected_return, benchmark_rate, sigma):
