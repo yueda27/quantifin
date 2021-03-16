@@ -2,6 +2,7 @@ import yahoofinancials as yf
 import datetime
 from functools import partial
 from quantifin.util.greeks import *
+from quantifin.util import statistics
 from quantifin.util import RiskFree, extract_prices
 from scipy.stats import kurtosis, skew
 
@@ -191,6 +192,15 @@ class Stock(yf.YahooFinancials):
             benchmark_rate = self.__default_benchmark(start_date, end_date, period)
         differential_return = self.__get_diff_returns(start_date, end_date, period)
         return sortino_ratio(differential_return, benchmark_rate)
+    
+    def get_coefficient_of_variation(self, years, period):
+        today = datetime.datetime.now()
+        start_date = datetime.datetime(today.year - years, today.month, today.day)
+        stock_returns = price_returns(extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period), self.stock_code))
+        return(statistics.coefficient_of_variation(stock_returns))
+        
+
+
 '''TODO:
     alpha
     coeff-variation

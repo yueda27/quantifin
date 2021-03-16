@@ -62,8 +62,3 @@ def multistage_growth(current_cf: float, req_rate: float, growth_trajectory: lis
 
 def __valuation_error_message(value):
     return f"{value} provided is 0. Result using this valuation method is invalid"
-
-'''
- TODO:
-    Cash Flow valuation
- ''' 
