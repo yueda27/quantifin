@@ -32,7 +32,8 @@ class RiskFree(YahooFinancials):
     def yield_history(self, start_date, end_date, period):
         history = self.get_historical_price_data(start_date, end_date, period)
         history = extract_prices(history, self.market_code)
-        for period in history.items():
-            history[period[0]] = round(period[1] / 100, 3)
-        return history
+        result = []
+        for period in sorted(history, reverse=True):
+            result.append(round(history[period] / 100, 3))
+        return result
 
