@@ -9,7 +9,9 @@ from quantifin.equity import Stock
 from quantifin.equity.valuation import *
 from quantifin.util import markets, RiskFree
 
-@patch.object(Stock, 'get_beta', return_value = 1.2)
+yield_history  = [0.009,0.008,0.009,0.007,0.007,0.005,0.007,0.006,0.006,0.007,0.011,0.015]
+
+@patch.object(Stock, 'get_beta', return_value = 2.2)
 class TestCase(unittest.TestCase):
     def setUp(self):
         self.base_path = Path(__file__).parent
@@ -121,23 +123,22 @@ class TestCase(unittest.TestCase):
     #Test Statistics & Greeks
     #########################
     @patch.object(Stock, "get_historical_price_data")
-    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008])
-    def test_sharpe_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
+    @patch.object(RiskFree, "yield_history", return_value = yield_history)
+    def test_sharpe_ratio(self, MockYieldHistory, MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
-        benchmark_rates = [0.009, 0.008, 0.009, 0.007, 0.007, 0.005, 0.007, 0.006, 0.006, 0.007, 0.011]
 
-        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.15861)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", yield_history[1:]), 1.15593)
         self.assertFalse(MockYieldHistory.called)
         self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.15593)
         self.assertTrue(MockYieldHistory.called)
     
     @patch.object(Stock, "get_historical_price_data")
-    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008])
+    @patch.object(RiskFree, "yield_history", return_value = yield_history)
     def test_sortino_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
-        benchmark_rates = [0.008, 0.009, 0.007, 0.007, 0.005, 0.007, 0.006, 0.006, 0.007, 0.011, 0.015]
+        benchmark_rates = yield_history[1:]
 
         self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.047)
         self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly"), 1.047)
@@ -152,7 +153,7 @@ class TestCase(unittest.TestCase):
     def test_alpha(self, MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect =  lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
-        self.assertEqual(s.get_alpha(3, 0.1, 0.03), 0.507)
+        self.assertEqual(s.get_alpha(3, 0.1, 0.03), 0.437)
 
     def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):

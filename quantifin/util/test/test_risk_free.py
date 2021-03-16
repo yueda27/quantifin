@@ -38,5 +38,5 @@ class TestCase(unittest.TestCase):
     @patch.object(RiskFree, 'get_historical_price_data')
     def test_yield_history(self, MockHistPrice):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_yield.json')
-        correct = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008, 0.009]
+        correct = [0.009, 0.008, 0.009, 0.007, 0.007, 0.005, 0.007, 0.006, 0.006, 0.007, 0.011, 0.015] #Ensure descending time order from latest to oldest 
         self.assertEqual(self.ten_year.yield_history("2020-01-01", "2021-01-01", "monthly"), correct)
