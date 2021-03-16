@@ -184,7 +184,7 @@ class Stock(yf.YahooFinancials):
         return RiskFree(10).yield_history(start, end, period)[:-1]
     
     def __get_diff_returns(self, start_date, end_date, period):
-        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
+        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)[::-1]
         return price_returns(prices)
 
     def get_sortino_ratio(self, start_date, end_date, period, benchmark_rate = None):
@@ -196,12 +196,12 @@ class Stock(yf.YahooFinancials):
     def get_coefficient_of_variation(self, years, period):
         today = datetime.datetime.now()
         start_date = datetime.datetime(today.year - years, today.month, today.day)
-        stock_returns = price_returns(extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period), self.stock_code))
+        stock_returns = self.__get_diff_returns(("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period)
         return(statistics.coefficient_of_variation(stock_returns))
-        
 
-
-'''TODO:
-    alpha
-    coeff-variation
-'''
+    def get_alpha(self, years, market_return, risk_free):
+        today = datetime.datetime.now()
+        start_date = datetime.datetime(today.year - years, today.month, today.day)
+        price_list = extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), "monthly"), self.stock_code)
+        period_return = (price_list[-1] / price_list[0]) - 1
+        return alpha(period_return, market_return, risk_free, self.beta)
