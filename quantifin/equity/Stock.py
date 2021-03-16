@@ -2,6 +2,7 @@ import yahoofinancials as yf
 import datetime
 from functools import partial
 from quantifin.util.greeks import *
+from quantifin.util import statistics
 from quantifin.util import RiskFree, extract_prices
 from scipy.stats import kurtosis, skew
 
@@ -175,15 +176,32 @@ class Stock(yf.YahooFinancials):
     
     def get_sharpe_ratio_ex_post(self, start_date, end_date, period, benchmark_rate = None):
         if benchmark_rate is None:
-            benchmark_rate = RiskFree(10).yield_history(start_date, end_date, period)[:-1]
-        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)
-        differential_return = price_returns(prices)
+            benchmark_rate = self.__default_benchmark(start_date, end_date, period)
+        differential_return = self.__get_diff_returns(start_date, end_date, period)
         return sharpe_ratio_ex_post(differential_return, benchmark_rate)
+    
+    def __default_benchmark(self, start, end, period):
+        return RiskFree(10).yield_history(start, end, period)[:-1]
+    
+    def __get_diff_returns(self, start_date, end_date, period):
+        prices = extract_prices(self.get_historical_price_data(start_date, end_date, period), self.stock_code)[::-1]
+        return price_returns(prices)
 
+    def get_sortino_ratio(self, start_date, end_date, period, benchmark_rate = None):
+        if benchmark_rate is None:
+            benchmark_rate = self.__default_benchmark(start_date, end_date, period)
+        differential_return = self.__get_diff_returns(start_date, end_date, period)
+        return sortino_ratio(differential_return, benchmark_rate)
+    
+    def get_coefficient_of_variation(self, years, period):
+        today = datetime.datetime.now()
+        start_date = datetime.datetime(today.year - years, today.month, today.day)
+        stock_returns = self.__get_diff_returns(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period)
+        return(statistics.coefficient_of_variation(stock_returns))
 
-
-'''TODO:
-    sortino
-    alpha
-    coeff-variation
-'''
+    def get_alpha(self, years, market_return, risk_free):
+        today = datetime.datetime.now()
+        start_date = datetime.datetime(today.year - years, today.month, today.day)
+        price_list = extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), "monthly"), self.stock_code)
+        period_return = (price_list[-1] / price_list[0]) - 1
+        return alpha(period_return, market_return, risk_free, self.beta)

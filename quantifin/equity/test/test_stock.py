@@ -127,10 +127,31 @@ class TestCase(unittest.TestCase):
         s = Stock("AMZN")
         benchmark_rates = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008]
 
-        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.30305)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.12807)
         self.assertFalse(MockYieldHistory.called)
-        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.30305)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.12807)
         self.assertTrue(MockYieldHistory.called)
+    
+    @patch.object(Stock, "get_historical_price_data")
+    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008, 0.009])
+    def test_sortino_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
+        MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
+        s = Stock("AMZN")
+        benchmark_rates = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008]
+
+        self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.085)
+
+    @patch.object(Stock, "get_historical_price_data")
+    def test_coeff_variation(self, MockHistPrice, MockGetBeta):
+        MockHistPrice.side_effect =  lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
+        s = Stock("AMZN")
+        self.assertEqual(s.get_coefficient_of_variation(5, "weekly"), 2.109)
+    
+    @patch.object(Stock, "get_historical_price_data")
+    def test_alpha(self, MockHistPrice, MockGetBeta):
+        MockHistPrice.side_effect =  lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
+        s = Stock("AMZN")
+        self.assertEqual(s.get_alpha(3, 0.1, 0.03), 0.507)
 
     def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):
