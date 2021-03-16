@@ -196,7 +196,7 @@ class Stock(yf.YahooFinancials):
     def get_coefficient_of_variation(self, years, period):
         today = datetime.datetime.now()
         start_date = datetime.datetime(today.year - years, today.month, today.day)
-        stock_returns = self.__get_diff_returns(("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period)
+        stock_returns = self.__get_diff_returns(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period)
         return(statistics.coefficient_of_variation(stock_returns))
 
     def get_alpha(self, years, market_return, risk_free):
