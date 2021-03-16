@@ -137,9 +137,10 @@ class TestCase(unittest.TestCase):
     def test_sortino_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
-        benchmark_rates = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008]
+        benchmark_rates = [0.008, 0.009, 0.007, 0.007, 0.005, 0.007, 0.006, 0.006, 0.007, 0.011, 0.015]
 
-        self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.085)
+        self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.047)
+        self.assertEqual(s.get_sortino_ratio("2020-01-01", "2021-01-01", "monthly"), 1.047)
 
     @patch.object(Stock, "get_historical_price_data")
     def test_coeff_variation(self, MockHistPrice, MockGetBeta):
