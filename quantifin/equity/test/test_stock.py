@@ -125,11 +125,11 @@ class TestCase(unittest.TestCase):
     def test_sharpe_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
-        benchmark_rates = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008]
+        benchmark_rates = [0.009, 0.008, 0.009, 0.007, 0.007, 0.005, 0.007, 0.006, 0.006, 0.007, 0.011]
 
-        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.12807)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly", benchmark_rates), 1.15861)
         self.assertFalse(MockYieldHistory.called)
-        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.12807)
+        self.assertEqual(s.get_sharpe_ratio_ex_post("2020-01-01", "2021-01-01", "monthly"), 1.15593)
         self.assertTrue(MockYieldHistory.called)
     
     @patch.object(Stock, "get_historical_price_data")
