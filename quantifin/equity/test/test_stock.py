@@ -121,7 +121,7 @@ class TestCase(unittest.TestCase):
     #Test Statistics & Greeks
     #########################
     @patch.object(Stock, "get_historical_price_data")
-    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008, 0.009])
+    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008])
     def test_sharpe_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
@@ -133,7 +133,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue(MockYieldHistory.called)
     
     @patch.object(Stock, "get_historical_price_data")
-    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008, 0.009])
+    @patch.object(RiskFree, "yield_history", return_value = [0.015, 0.011, 0.007, 0.006, 0.006, 0.007, 0.005, 0.007, 0.007, 0.009, 0.008])
     def test_sortino_ratio(self, MockYieldHistory,MockHistPrice, MockGetBeta):
         MockHistPrice.side_effect = lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")

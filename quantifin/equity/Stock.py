@@ -181,7 +181,7 @@ class Stock(yf.YahooFinancials):
         return sharpe_ratio_ex_post(differential_return, benchmark_rate)
     
     def __default_benchmark(self, start, end, period):
-        yields = RiskFree(10).yield_history(start, end, period)[:-1]
+        yields = RiskFree(10).yield_history(start, end, period)
         yields.reverse()
         return yields
     

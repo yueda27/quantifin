@@ -28,7 +28,7 @@ def calculate_differential_returns(returns, benchmark, absolute = False):
 
 def __assert_rates_tally(returns, benchmark):
     if len(returns) != len(benchmark):
-        raise ValueError("Number of returns provided does not correspond to benchmark rates provided")
+        raise ValueError(f"Number of returns: {len(returns)} provided does not correspond to benchmark rates provided: {len(benchmark)}")
 
 def __calculate_differential_return(returns, benchmark, absolute = False):
     if absolute:
