@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 from pathlib import Path
 from json import load
 import yahoofinancials as yf
@@ -154,6 +154,28 @@ class TestCase(unittest.TestCase):
         MockHistPrice.side_effect =  lambda start, end, period: self.read_json(str(self.base_path) + '/resource/historical_price.json')
         s = Stock("AMZN")
         self.assertEqual(s.get_alpha(3, 0.1, 0.03), 0.437)
+    
+    @patch.object(Stock, 'get_key_statistics_data')
+    @patch.object(Stock, "get_financial_stmts")
+    def test_ebitda_related(self, MockGetFnStmts, MockKeyStats, MockGetBeta):
+        MockKeyStats.side_effect =  lambda: self.read_json(str(self.base_path) + '/resource/key_statistics.json')
+        MockGetFnStmts.side_effect = self.get_financial_stmts_side_effect
+        stock = Stock("D05.SI")
+        self.assertEqual(stock.ebitda, 6016000000)
+        self.assertEqual(stock.enterprise_to_ebitda(), 17.573)
+
+        with patch("quantifin.equity.Stock.key_stats", new_callable=PropertyMock) as mock_key_stats:
+            mock_key_stats.return_value = {"enterpriseToEbitda": 15.123}
+            stock = Stock("D05.SI")
+            self.assertEqual(stock.enterprise_to_ebitda(), 15.123)
+        
+    @patch.object(Stock, 'get_key_statistics_data')
+    @patch.object(Stock, "get_fcf_history", return_value = {"2020": 25924000000, "2019": 21653000000 , "2018": 17296000000, "2017": 6410000000})
+    def test_enterprise_value_fcf(self, MockFCFHistory,MockKeyStats, MockGetBeta):
+        MockKeyStats.side_effect =  lambda: self.read_json(str(self.base_path) + '/resource/key_statistics.json')
+        stock = Stock("D05.SI")
+        self.assertEqual(stock.enterprise_to_fcf(), 4.078)
+
 
     def get_financial_stmts_side_effect(self, period, stmt_type):
         if( stmt_type == "cash"):
