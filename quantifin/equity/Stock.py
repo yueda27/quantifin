@@ -229,4 +229,9 @@ class Stock(yf.YahooFinancials):
         if ev_ebitda is not None:
             return ev_ebitda
         return round(self.enterprise_value / self.ebitda, 3)
+    
+    def enterprise_to_fcf(self):
+        fcf_history = self.get_fcf_history()
+        latest_fcf = fcf_history.get(sorted(fcf_history.keys())[-1])
+        return round(self.enterprise_value / latest_fcf, 3)
         
