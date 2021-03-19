@@ -64,6 +64,19 @@ class Stock(yf.YahooFinancials):
             self.__balance_sheets = self.get_financial_stmts("annual", "balance")['balanceSheetHistory'][self.stock_code]
         return self.__balance_sheets
 
+    @property
+    def enterprise_value(self):
+        try:
+            return self.key_stats['enterpriseValue']
+        except KeyError:
+            return None
+    @property
+    def ebitda(self):
+        try:
+            date_key = Stock.get_date_key(self.income_stmts[0])
+            return self.income_stmts[0].get(date_key).get("operatingIncome") + self.cash_flow_stmts[0].get(date_key).get("depreciation")
+        except KeyError:
+            return None    
 
     def full_year_dividend(self):
         now_date = datetime.datetime.now()
@@ -207,3 +220,13 @@ class Stock(yf.YahooFinancials):
         sorted_period_key = sorted(price_list, reverse=True)        #Extra step for testability using mock
         period_return = (price_list.get(sorted_period_key[0]) / price_list.get(sorted_period_key[-1])) - 1
         return alpha(period_return, market_return, risk_free, self.beta)
+
+    def enterprise_to_ebitda(self):
+        try:
+            ev_ebitda = self.key_stats["enterpriseToEbitda"]
+        except KeyError:
+            return None
+        if ev_ebitda is not None:
+            return ev_ebitda
+        return round(self.enterprise_value / self.ebitda, 3)
+        
