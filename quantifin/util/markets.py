@@ -25,7 +25,11 @@ class Market(yf.YahooFinancials):
     @staticmethod
     def returns(market_price_list: list):
         start_price = market_price_list[0]['close']
-        end_price = market_price_list[-1]['close']
+        end_index = -1
+        end_price = None
+        while end_price is None:
+            end_price = market_price_list[end_index]['close']
+            end_index -= 1
         market_return = (end_price / start_price)
         return market_return
 
