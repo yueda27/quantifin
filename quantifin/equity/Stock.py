@@ -96,6 +96,7 @@ class Stock(yf.YahooFinancials):
         if (now.month == 12):
             return current_year(now) 
         return previous_year(now)
+    
 
     def _calculate_full_dividend(self, dividend_resp: dict):
         if dividend_resp[self.stock_code] is None:
@@ -208,19 +209,24 @@ class Stock(yf.YahooFinancials):
         return sortino_ratio(differential_return, benchmark_rate)
     
     def get_coefficient_of_variation(self, years, period):
-        today = datetime.datetime.now()
+        today = self.__get_today()
         start_date = datetime.datetime(today.year - years, today.month, today.day)
         stock_returns = self.__get_diff_returns(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), period)
         return(statistics.coefficient_of_variation(stock_returns))
 
     def get_alpha(self, years, market_return, risk_free):
-        today = datetime.datetime.now()
+        today = self.__get_today()
         start_date = datetime.datetime(today.year - years, today.month, today.day)
         price_list = extract_prices(self.get_historical_price_data(start_date.strftime("%Y-%m-%d"), today.strftime("%Y-%m-%d"), "monthly"), self.stock_code)
         sorted_period_key = sorted(price_list, reverse=True)        #Extra step for testability using mock
         period_return = (price_list.get(sorted_period_key[0]) / price_list.get(sorted_period_key[-1])) - 1
         return alpha(period_return, market_return, risk_free, self.beta)
 
+    def __get_today(self):
+        today = datetime.datetime.now()
+        if today.day == 1:
+            today - datetime.timedelta(days = 1)
+        return today
     def enterprise_to_ebitda(self):
         try:
             ev_ebitda = self.key_stats["enterpriseToEbitda"]
