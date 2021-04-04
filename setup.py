@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="quantifin", # Replace with your own username
-    version="0.0.41",
+    version="0.0.42",
     author="Yue Da Chua",
     author_email="chua_yueda@hotmail.com",
     description="Quant Finance Package",
